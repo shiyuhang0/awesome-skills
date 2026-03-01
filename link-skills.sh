@@ -7,16 +7,22 @@ SOURCE_ROOT="$SCRIPT_DIR/.agents/skills"
 usage() {
   cat <<"EOF"
 Usage:
-  ./link-skills.sh [--all] [--force] <target_project_path> [category ...]
+  ./link-skills.sh [link] [--all] [--force] <target_project_path> [category ...]
+  ./link-skills.sh unlink [--all] [--force] <target_project_path> [category ...]
 
 Examples:
   ./link-skills.sh /path/to/project general
+  ./link-skills.sh link /path/to/project general
+  ./link-skills.sh unlink /path/to/project general
   ./link-skills.sh /path/to/project frontend backend
   ./link-skills.sh --all /path/to/project
+  ./link-skills.sh unlink --all /path/to/project
 
 Options:
+  link      Link categories into target project (default command)
+  unlink    Remove linked categories from target project
   --all     Link all categories found in .agents/skills
-  --force   Replace existing targets (directories/files/symlinks)
+  --force   For link: replace existing targets; for unlink: remove non-symlink targets
   -h,--help Show this help message
 EOF
 }
@@ -24,9 +30,14 @@ EOF
 FORCE=0
 LINK_ALL=0
 POSITIONAL=()
+CMD="link"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    link|unlink)
+      CMD="$1"
+      shift
+      ;;
     --all)
       LINK_ALL=1
       shift
@@ -81,7 +92,7 @@ else
 fi
 
 if [[ ${#CATEGORIES[@]} -eq 0 ]]; then
-  echo "No categories found to link."
+  echo "No categories found to process."
   exit 0
 fi
 
@@ -89,20 +100,37 @@ for category in "${CATEGORIES[@]}"; do
   source_path="$SOURCE_ROOT/$category"
   target_path="$TARGET_ROOT/$category"
 
-  if [[ ! -d "$source_path" ]]; then
-    echo "Skip: category does not exist in awesome-skills: $category" >&2
+  if [[ "$CMD" == "link" ]]; then
+    if [[ ! -d "$source_path" ]]; then
+      echo "Skip: category does not exist in awesome-skills: $category" >&2
+      continue
+    fi
+
+    if [[ -L "$target_path" || -e "$target_path" ]]; then
+      if [[ "$FORCE" -eq 1 ]]; then
+        rm -rf "$target_path"
+      else
+        echo "Skip: target already exists, use --force to replace: $target_path"
+        continue
+      fi
+    fi
+
+    ln -s "$source_path" "$target_path"
+    echo "Linked: $category -> $target_path"
     continue
   fi
 
-  if [[ -L "$target_path" || -e "$target_path" ]]; then
+  if [[ -L "$target_path" ]]; then
+    rm -f "$target_path"
+    echo "Unlinked: $category from $target_path"
+  elif [[ -e "$target_path" ]]; then
     if [[ "$FORCE" -eq 1 ]]; then
       rm -rf "$target_path"
+      echo "Removed (forced): $category from $target_path"
     else
-      echo "Skip: target already exists, use --force to replace: $target_path"
-      continue
+      echo "Skip: target exists but is not a symlink, use --force to remove: $target_path"
     fi
+  else
+    echo "Skip: category is not linked in target project: $category"
   fi
-
-  ln -s "$source_path" "$target_path"
-  echo "Linked: $category -> $target_path"
 done

@@ -62,7 +62,7 @@ Example:
 From `awesome-skills` root:
 
 ```bash
-./link-skills.sh /path/to/your-project general
+./link-skills.sh link /path/to/your-project general
 ```
 
 This creates a symlink in target project:
@@ -74,29 +74,44 @@ This creates a symlink in target project:
 ### 4) Link multiple categories
 
 ```bash
-./link-skills.sh /path/to/your-project general frontend backend
+./link-skills.sh link /path/to/your-project general frontend backend
 ```
 
 ### 5) Link all categories
 
 ```bash
-./link-skills.sh --all /path/to/your-project
+./link-skills.sh link --all /path/to/your-project
 ```
 
 ### 6) Replace existing links or folders (if needed)
 
 ```bash
-./link-skills.sh --force /path/to/your-project general
+./link-skills.sh link --force /path/to/your-project general
+```
+
+### 7) Unlink categories from a target project
+
+```bash
+./link-skills.sh unlink /path/to/your-project general
+```
+
+Unlink all categories:
+
+```bash
+./link-skills.sh unlink --all /path/to/your-project
 ```
 
 ## Script Usage
 
 ```bash
-./link-skills.sh [--all] [--force] <target_project_path> [category ...]
+./link-skills.sh [link] [--all] [--force] <target_project_path> [category ...]
+./link-skills.sh unlink [--all] [--force] <target_project_path> [category ...]
 ```
 
-- `--all`: link all categories under `.agents/skills/`
-- `--force`: replace existing file/folder/symlink at target path
+- `link`: link categories into target project (default command)
+- `unlink`: remove linked categories from target project
+- `--all`: process all categories under `.agents/skills/`
+- `--force`: for `link` replace existing target; for `unlink` remove non-symlink target
 - `-h`, `--help`: show help
 
 ## How to Add New Skills
@@ -107,7 +122,7 @@ This creates a symlink in target project:
    - `.agents/skills/<category>/<skill-name>/`
 3. Add the skill spec:
    - `.agents/skills/<category>/<skill-name>/SKILL.md`
-4. Re-run `link-skills.sh` for the target project/category.
+4. Re-run `link-skills.sh` (`link` command) for the target project/category.
 
 ## Validation Checklist
 
