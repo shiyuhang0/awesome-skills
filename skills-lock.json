@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "documentation-standards": {
+      "source": "terrylica/cc-skills",
+      "sourceType": "github",
+      "computedHash": "e104694883c955959dc9c51fd1990c0dfad25de4e9b549587cfbe5e0000901f6"
+    },
+    "technical-writing": {
+      "source": "supercent-io/skills-template",
+      "sourceType": "github",
+      "computedHash": "0245935fbcc7aa2952b8b9799559a7bf9623c097e722124fb501fe1794f9caa6"
+    }
+  }
+}
