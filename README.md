@@ -101,6 +101,14 @@ Unlink all categories:
 ./link-skills.sh unlink --all /path/to/your-project
 ```
 
+Recommended cleanup:
+- After finishing a task that needs specific skills, run `unlink` to keep target projects clean and avoid stale category links.
+
+Typical workflow:
+1. Link required categories before the task.
+2. Use skills in your agent workflow.
+3. Unlink categories after the task is completed.
+
 ## Script Usage
 
 ```bash
@@ -136,6 +144,15 @@ ls -la /path/to/your-project/.agents/skills/<category>
 Expected:
 - category entry is a symlink
 - skill folders/files are accessible through the symlink
+
+After unlinking, validate cleanup:
+
+```bash
+ls -la /path/to/your-project/.agents/skills
+```
+
+Expected:
+- removed categories are no longer present as symlinks in target project
 
 ## Troubleshooting
 
